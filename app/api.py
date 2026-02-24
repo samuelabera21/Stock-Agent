@@ -1,7 +1,9 @@
+import os
 import sys
 from pathlib import Path
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -13,6 +15,7 @@ from src.config import model_path_for_ticker
 
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.get("/health")
@@ -54,4 +57,4 @@ def predict():
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")), debug=False)

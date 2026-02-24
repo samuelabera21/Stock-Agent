@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import './App.css'
 
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+
 function formatNumber(value) {
   if (typeof value !== 'number' || Number.isNaN(value)) {
     return '--'
@@ -56,7 +58,7 @@ function App() {
     setError('')
 
     try {
-      const response = await fetch(endpoint, options)
+      const response = await fetch(`${API_BASE}${endpoint}`, options)
       const payload = await response.json()
 
       if (!response.ok) {

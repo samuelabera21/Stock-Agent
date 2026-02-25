@@ -1,4 +1,9 @@
-# Stock Agent
+
+# Stock Agent 🚀
+
+Live Demo: https://stock-agent-bn3k.vercel.app/
+
+AI Stock Agent with a Flask backend and React frontend.
 
 AI Stock Agent with a Flask backend and React frontend.
 

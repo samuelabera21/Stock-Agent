@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import './App.css'
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+const configuredApiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+const API_BASE = configuredApiBase || (import.meta.env.DEV ? '' : null)
 
 function formatNumber(value) {
   if (typeof value !== 'number' || Number.isNaN(value)) {
@@ -58,16 +59,28 @@ function App() {
     setError('')
 
     try {
+      if (!API_BASE) {
+        throw new Error('API is not configured. Set VITE_API_BASE_URL in Vercel project settings.')
+      }
+
       const response = await fetch(`${API_BASE}${endpoint}`, options)
-      const payload = await response.json()
+      const contentType = response.headers.get('content-type') || ''
+      const payload = contentType.includes('application/json')
+        ? await response.json()
+        : null
 
       if (!response.ok) {
-        throw new Error(payload.error || 'Request failed')
+        throw new Error(payload?.error || `Request failed (${response.status})`)
+      }
+
+      if (!payload) {
+        throw new Error('Backend returned a non-JSON response. Check API URL and deployment logs.')
       }
 
       setResult(payload)
     } catch (apiError) {
-      setError(apiError.message)
+      const message = apiError instanceof Error ? apiError.message : 'Request failed'
+      setError(message)
     } finally {
       setLoading(false)
     }

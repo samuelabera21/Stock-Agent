@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 
@@ -21,7 +22,7 @@ FEATURE_COLUMNS = [
 
 TRAIN_SPLIT_RATIO = 0.8
 RANDOM_STATE = 42
-N_ESTIMATORS = 500
+N_ESTIMATORS = int(os.getenv("N_ESTIMATORS", "120"))
 MIN_ROWS_FOR_TRAINING = 120
 TARGET_HORIZON_DAYS = 1
 

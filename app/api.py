@@ -18,6 +18,17 @@ app = Flask(__name__)
 CORS(app)
 
 
+@app.get("/")
+def index():
+    return jsonify(
+        {
+            "name": "stock-agent-api",
+            "status": "ok",
+            "endpoints": ["/health", "/train", "/predict"],
+        }
+    )
+
+
 @app.get("/health")
 def health():
     default_model = model_path_for_ticker("AAPL")

@@ -88,14 +88,14 @@ def train_model(data, ticker="AAPL"):
     price_model = RandomForestRegressor(
         n_estimators=N_ESTIMATORS,
         random_state=RANDOM_STATE,
-        n_jobs=-1,
+        n_jobs=1,
     )
     price_model.fit(X_train, y_train.to_numpy().ravel())
 
     decision_model = RandomForestClassifier(
         n_estimators=N_ESTIMATORS,
         random_state=RANDOM_STATE,
-        n_jobs=-1,
+        n_jobs=1,
     )
     decision_model.fit(X_train, y_decision_train)
 

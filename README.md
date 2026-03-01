@@ -23,6 +23,33 @@ This project is dataset-driven: it fetches market data from Yahoo Finance (`yfin
 - Node.js 18+
 - npm
 
+## Quick Run (Local)
+
+Use 2 terminals.
+
+Terminal 1 (Backend):
+
+```bash
+cd /s/Project/python/stock-agent-project
+source /c/Users/hp/anaconda3/Scripts/activate stock_agent
+python -m pip install -r requirements.txt
+python app/api.py
+```
+
+Terminal 2 (Frontend):
+
+```bash
+cd /s/Project/python/stock-agent-project/frontend
+cp .env.example .env.local
+npm install
+npm run dev
+```
+
+Open:
+
+- Frontend: `http://localhost:5173`
+- Backend health: `http://127.0.0.1:5000/health`
+
 ## 1) Backend Setup
 
 From project root:
@@ -47,6 +74,25 @@ npm run dev
 ```
 
 Frontend runs on: `http://localhost:5173`
+
+### Frontend API configuration (safe for deploy)
+
+For local development, create a local env file from the example:
+
+```bash
+cd /s/Project/python/stock-agent-project/frontend
+cp .env.example .env.local
+```
+
+Use this in `frontend/.env.local`:
+
+```bash
+VITE_API_BASE_URL=http://127.0.0.1:5000
+```
+
+For production (Vercel), set `VITE_API_BASE_URL` in Vercel Project Settings to your HTTPS backend URL (for example Render).
+
+This does not change deployed behavior by itself; `.env.local` is local-only and ignored by git.
 
 ## API Endpoints
 

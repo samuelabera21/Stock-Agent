@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import './App.css'
 
 const configuredApiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
-const API_BASE = configuredApiBase || (import.meta.env.DEV ? '' : null)
+const API_BASE = configuredApiBase || (import.meta.env.DEV ? 'http://127.0.0.1:5000' : null)
 
 function formatNumber(value) {
   if (typeof value !== 'number' || Number.isNaN(value)) {

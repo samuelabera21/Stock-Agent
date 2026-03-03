@@ -131,7 +131,7 @@ This does not change deployed behavior by itself; `.env.local` is local-only and
 
 - `GET /health`
   - Health check + whether default model exists.
-- `POST /train?ticker=AAPL&period=5y`
+- `GET|POST /train?ticker=AAPL&period=5y`
   - Force retrain model using fetched dataset.
 - `GET /predict?ticker=AAPL&period=1y`
   - Predict using trained model (or retrain with `retrain=true`).

@@ -95,7 +95,7 @@ def health():
     )
 
 
-@app.post("/train")
+@app.route("/train", methods=["GET", "POST"])
 def train():
     ticker = request.args.get("ticker", "AAPL")
     period = request.args.get("period", DEFAULT_TRAIN_PERIOD)

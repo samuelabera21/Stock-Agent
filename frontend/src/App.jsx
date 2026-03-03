@@ -3,6 +3,7 @@ import './App.css'
 
 const configuredApiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 const API_BASE = configuredApiBase || (import.meta.env.DEV ? 'http://127.0.0.1:5000' : null)
+const REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_API_TIMEOUT_MS || 45000)
 
 function formatNumber(value) {
   if (typeof value !== 'number' || Number.isNaN(value)) {
@@ -63,7 +64,18 @@ function App() {
         throw new Error('API is not configured. Set VITE_API_BASE_URL in Vercel project settings.')
       }
 
-      const response = await fetch(`${API_BASE}${endpoint}`, options)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+      let response
+      try {
+        response = await fetch(`${API_BASE}${endpoint}`, {
+          ...options,
+          signal: controller.signal,
+        })
+      } finally {
+        clearTimeout(timeoutId)
+      }
+
       const contentType = response.headers.get('content-type') || ''
       const payload = contentType.includes('application/json')
         ? await response.json()
@@ -79,7 +91,14 @@ function App() {
 
       setResult(payload)
     } catch (apiError) {
-      const message = apiError instanceof Error ? apiError.message : 'Request failed'
+      let message = apiError instanceof Error ? apiError.message : 'Request failed'
+
+      if (apiError instanceof DOMException && apiError.name === 'AbortError') {
+        message = `Request timed out after ${Math.round(REQUEST_TIMEOUT_MS / 1000)}s. Backend may be cold-starting or training.`
+      } else if (message === 'Failed to fetch') {
+        message = 'Network error while contacting backend. Check VITE_API_BASE_URL, backend uptime, CORS, and HTTPS URL.'
+      }
+
       setError(message)
     } finally {
       setLoading(false)

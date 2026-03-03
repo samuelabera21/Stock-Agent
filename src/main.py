@@ -24,19 +24,22 @@ def run(ticker="AAPL", period="5y", force_retrain=False):
     trained = False
     artifact = None
 
-    if force_retrain or not model_path.exists():
+    if force_retrain:
         artifact = train_model(data, ticker=ticker)
         trained = True
+    elif not model_path.exists():
+        raise FileNotFoundError(
+            f"Model for ticker '{ticker}' not trained yet. Call /train first or use /predict?retrain=true."
+        )
 
     try:
         prediction_info, loaded_artifact = predict_price(data, ticker=ticker)
     except ValueError as error:
         if "artifact format is invalid" not in str(error).lower() and "price model not found" not in str(error).lower():
             raise
-
-        artifact = train_model(data, ticker=ticker)
-        trained = True
-        prediction_info, loaded_artifact = predict_price(data, ticker=ticker)
+        raise ValueError(
+            "Stored model artifact is invalid. Retrain the model using /train or /predict?retrain=true."
+        )
 
     if artifact is None:
         artifact = loaded_artifact

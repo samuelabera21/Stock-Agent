@@ -2,6 +2,11 @@
 # This library allows Python to download stock data from Yahoo Finance.
 import yfinance as yf
 
+try:
+    from .config import YFINANCE_FETCH_TIMEOUT_SECONDS
+except ImportError:
+    from config import YFINANCE_FETCH_TIMEOUT_SECONDS
+
 
 # This dictionary is used if a ticker symbol needs an alternative name.
 # Example: Sometimes Yahoo uses GOOG instead of GOOGL.
@@ -48,7 +53,8 @@ def fetch_stock_data(ticker="AAPL", period="5y", retries=3):
                     current_ticker,
                     period=period,
                     progress=False,
-                    auto_adjust=False
+                    auto_adjust=False,
+                    timeout=YFINANCE_FETCH_TIMEOUT_SECONDS,
                 )
 
                 # If we successfully received non-empty data, stop retrying

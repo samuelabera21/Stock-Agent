@@ -10,6 +10,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 try:
     from .config import (
+        BASELINE_BLEND_WEIGHT,
         BASELINE_HARD_CUTOFF,
         BLEND_WEIGHT_WHEN_STRONGER,
         BLEND_WEIGHT_WHEN_WEAKER,
@@ -23,6 +24,7 @@ try:
     )
 except ImportError:
     from config import (
+        BASELINE_BLEND_WEIGHT,
         BASELINE_HARD_CUTOFF,
         BLEND_WEIGHT_WHEN_STRONGER,
         BLEND_WEIGHT_WHEN_WEAKER,
@@ -110,7 +112,7 @@ def train_model(data, ticker="AAPL", period="5y"):
     use_baseline = quality_ratio < BASELINE_HARD_CUTOFF
 
     if use_baseline:
-        blend_weight = 0.0
+        blend_weight = BASELINE_BLEND_WEIGHT
     elif quality_ratio < 1.0:
         blend_weight = BLEND_WEIGHT_WHEN_WEAKER
     else:

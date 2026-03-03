@@ -1,9 +1,9 @@
 import joblib
 
 try:
-    from .config import FEATURE_COLUMNS, model_path_for_ticker
+    from .config import BASELINE_BLEND_WEIGHT, FEATURE_COLUMNS, model_path_for_ticker
 except ImportError:
-    from config import FEATURE_COLUMNS, model_path_for_ticker
+    from config import BASELINE_BLEND_WEIGHT, FEATURE_COLUMNS, model_path_for_ticker
 
 
 def load_artifact(ticker="AAPL", period="5y"):
@@ -64,10 +64,15 @@ def predict_price(data, ticker="AAPL", period="5y"):
         artifact_blend_weight = 0.0
     if artifact_blend_weight > 1.0:
         artifact_blend_weight = 1.0
+    if use_baseline and artifact_blend_weight == 0.0:
+        artifact_blend_weight = float(BASELINE_BLEND_WEIGHT)
 
     applied_blend_weight = 0.0 if use_baseline else artifact_blend_weight
+    if use_baseline:
+        applied_blend_weight = artifact_blend_weight
     final_price = (applied_blend_weight * model_price) + ((1.0 - applied_blend_weight) * current_price)
     predicted_return = (final_price / current_price) - 1.0
+    decision_return = model_predicted_return
 
     metrics = artifact.get("metrics", {})
     decision_quantiles = metrics.get("decision_quantiles", {}) if isinstance(metrics, dict) else {}
@@ -77,9 +82,9 @@ def predict_price(data, ticker="AAPL", period="5y"):
     if lower_q >= upper_q:
         lower_q, upper_q = -0.002, 0.002
 
-    if predicted_return <= lower_q:
+    if decision_return <= lower_q:
         quantile_decision = "SELL"
-    elif predicted_return >= upper_q:
+    elif decision_return >= upper_q:
         quantile_decision = "BUY"
     else:
         quantile_decision = "HOLD"
@@ -110,6 +115,7 @@ def predict_price(data, ticker="AAPL", period="5y"):
         "current_price": current_price,
         "predicted_return": float(predicted_return),
         "model_predicted_return": float(model_predicted_return),
+        "decision_return": float(decision_return),
         "model_price": float(model_price),
         "final_price": float(final_price),
         "used_baseline": bool(use_baseline),

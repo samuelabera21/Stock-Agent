@@ -57,6 +57,10 @@ function App() {
   const [error, setError] = useState('')
   const [result, setResult] = useState(null)
 
+  const decision = result?.decision || '--'
+  const decisionClass =
+    decision === 'BUY' ? 'tone-buy' : decision === 'SELL' ? 'tone-sell' : 'tone-hold'
+
   const callApi = async (endpoint, options = {}) => {
     setLoading(true)
     setError('')
@@ -121,29 +125,39 @@ function App() {
 
   return (
     <main className="container">
-      <header className="header">
+      <div className="orb orb-one" aria-hidden="true" />
+      <div className="orb orb-two" aria-hidden="true" />
+
+      <header className="header hero">
+        <span className="hero-badge">Real-Time AI Forecast</span>
         <h1>AI Stock Agent</h1>
-        <p>Production-safe prediction dashboard</p>
+        <p>Production-safe prediction dashboard powered by live market datasets</p>
       </header>
 
-      <section className="controls">
-        <input
-          value={ticker}
-          onChange={(event) => setTicker(event.target.value)}
-          placeholder="Ticker (e.g. AAPL)"
-          maxLength={10}
-        />
-        <button onClick={handlePredict} disabled={loading}>
-          {loading ? 'Loading...' : 'Predict'}
-        </button>
-        <button className="secondary" onClick={handleRetrain} disabled={loading}>
-          {loading ? 'Loading...' : 'Retrain'}
-        </button>
+      <section className="controls panel glass">
+        <div className="control-input-wrap">
+          <label htmlFor="ticker-input">Ticker</label>
+          <input
+            id="ticker-input"
+            value={ticker}
+            onChange={(event) => setTicker(event.target.value)}
+            placeholder="Ticker (e.g. AAPL)"
+            maxLength={10}
+          />
+        </div>
+        <div className="control-actions">
+          <button onClick={handlePredict} disabled={loading}>
+            {loading ? 'Loading...' : 'Predict'}
+          </button>
+          <button className="secondary" onClick={handleRetrain} disabled={loading}>
+            {loading ? 'Loading...' : 'Retrain'}
+          </button>
+        </div>
       </section>
 
       {error ? <p className="error">{error}</p> : null}
 
-      <section className="panel metrics">
+      <section className="panel glass metrics">
         <h2>How This Dashboard Works</h2>
         <div className="metrics-grid">
           <div><span>Data Source</span><strong>Yahoo Finance (yfinance)</strong></div>
@@ -154,38 +168,38 @@ function App() {
       </section>
 
       <section className="grid">
-        <article className="card">
+        <article className="card glass">
           <h3>Current Price</h3>
           <p>${formatNumber(result?.current_price)}</p>
         </article>
-        <article className="card">
+        <article className="card glass">
           <h3>Predicted Price</h3>
           <p>${formatNumber(result?.predicted_price)}</p>
         </article>
-        <article className="card">
+        <article className="card glass">
           <h3>Model Estimate</h3>
           <p>${formatNumber(result?.model_price)}</p>
         </article>
-        <article className="card">
+        <article className={`card glass ${decisionClass}`}>
           <h3>Decision</h3>
-          <p>{result?.decision || '--'}</p>
+          <p>{decision}</p>
         </article>
-        <article className="card">
+        <article className="card glass">
           <h3>Model Status</h3>
           <p>{result ? (result.used_baseline ? 'Using Baseline' : 'Using Model') : '--'}</p>
         </article>
-        <article className="card">
+        <article className="card glass">
           <h3>Confidence</h3>
           <p>{result?.confidence?.toUpperCase() || '--'}</p>
         </article>
       </section>
 
-      <section className="panel">
+      <section className="panel glass">
         <h2>Recent Price Trend</h2>
         <MiniLineChart points={result?.recent_close_prices || []} />
       </section>
 
-      <section className="panel metrics">
+      <section className="panel glass metrics">
         <h2>Validation Metrics</h2>
         <div className="metrics-grid">
           <div><span>MAE</span><strong>{formatNumber(result?.metrics?.mae)}</strong></div>
@@ -195,7 +209,7 @@ function App() {
         </div>
       </section>
 
-      <section className="panel metrics">
+      <section className="panel glass metrics">
         <h2>Data Provenance</h2>
         <div className="metrics-grid">
           <div><span>Source</span><strong>{result?.data_source || '--'}</strong></div>

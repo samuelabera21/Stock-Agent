@@ -3,7 +3,7 @@ import './App.css'
 
 const configuredApiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 const API_BASE = configuredApiBase || (import.meta.env.DEV ? 'http://127.0.0.1:5000' : null)
-const REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_API_TIMEOUT_MS || 45000)
+const REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_API_TIMEOUT_MS || 120000)
 const DEFAULT_TRAIN_PERIOD = '5y'
 const DEFAULT_PREDICT_PERIOD = '1y'
 
@@ -97,7 +97,7 @@ function App() {
       let message = apiError instanceof Error ? apiError.message : 'Request failed'
 
       if (apiError instanceof DOMException && apiError.name === 'AbortError') {
-        message = `Request timed out after ${Math.round(REQUEST_TIMEOUT_MS / 1000)}s. Backend may be cold-starting or training.`
+        message = `Request timed out after ${Math.round(REQUEST_TIMEOUT_MS / 1000)}s. Backend may be cold-starting or training a model for this ticker.`
       } else if (message === 'Failed to fetch') {
         message = 'Network error while contacting backend. Check VITE_API_BASE_URL, backend uptime, CORS, and HTTPS URL.'
       }

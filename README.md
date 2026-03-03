@@ -134,7 +134,9 @@ This does not change deployed behavior by itself; `.env.local` is local-only and
 - `GET|POST /train?ticker=AAPL&period=5y`
   - Force retrain model using fetched dataset.
 - `GET /predict?ticker=AAPL&period=1y`
-  - Predict using trained model (or retrain with `retrain=true`).
+  - Predict using trained model.
+  - If model artifact is missing (for example after a redeploy), API auto-trains once and then returns prediction.
+  - You can still force refresh with `retrain=true`.
 
 Examples:
 

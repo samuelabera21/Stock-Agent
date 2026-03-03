@@ -115,26 +115,31 @@ def predict():
     period = request.args.get("period", DEFAULT_PREDICT_PERIOD)
     retrain = request.args.get("retrain", "false").lower() == "true"
 
+    auto_trained = False
+
     try:
         if not retrain and PREDICT_CACHE_TTL_SECONDS > 0:
             cached = _get_cached_prediction(ticker=ticker, period=period)
             if cached is not None:
                 return jsonify(cached)
 
-        result = run(ticker=ticker, period=period, force_retrain=retrain)
+        try:
+            result = run(ticker=ticker, period=period, force_retrain=retrain)
+        except FileNotFoundError:
+            result = run(ticker=ticker, period=period, force_retrain=True)
+            auto_trained = True
 
-        if retrain:
+        if retrain or auto_trained:
             _invalidate_cache_for_ticker(ticker)
 
         result["cached"] = False
         result["cache_ttl_seconds"] = PREDICT_CACHE_TTL_SECONDS
+        result["auto_trained"] = auto_trained
 
         if not retrain and PREDICT_CACHE_TTL_SECONDS > 0:
             _set_cached_prediction(ticker=ticker, period=period, result=result)
 
         return jsonify(result)
-    except FileNotFoundError:
-        return jsonify({"error": "Model not trained yet. Call /train first."}), 400
     except Exception as error:
         return jsonify({"error": str(error)}), 400
 

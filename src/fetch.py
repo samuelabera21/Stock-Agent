@@ -12,6 +12,9 @@ except ImportError:
 # Example: Sometimes Yahoo uses GOOG instead of GOOGL.
 TICKER_FALLBACKS = {
     "GOOGL": "GOOG",
+    "GOOGLE": "GOOG",
+    "MICROSOFT": "MSFT",
+    "MCSF": "MSFT",
 }
 
 
@@ -20,6 +23,8 @@ TICKER_FALLBACKS = {
 # period  → how much historical data (default: 5 years)
 # retries → how many times to try if download fails
 def fetch_stock_data(ticker="AAPL", period="5y", retries=3):
+
+    ticker = (ticker or "AAPL").upper().strip()
 
     # Will store the downloaded stock data (as a table/DataFrame)
     data = None

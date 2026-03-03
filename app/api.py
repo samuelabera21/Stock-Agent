@@ -86,7 +86,7 @@ def index():
 
 @app.get("/health")
 def health():
-    default_model = model_path_for_ticker("AAPL")
+    default_model = model_path_for_ticker("AAPL", period=DEFAULT_PREDICT_PERIOD)
     return jsonify(
         {
             "status": "ok",

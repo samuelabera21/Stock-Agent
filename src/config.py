@@ -35,6 +35,10 @@ BLEND_WEIGHT_WHEN_WEAKER = 0.35
 BLEND_WEIGHT_WHEN_STRONGER = 0.8
 
 
-def model_path_for_ticker(ticker: str) -> Path:
-	normalized = (ticker or "AAPL").upper().strip().replace("/", "_")
-	return MODELS_DIR / f"model_{normalized}.pkl"
+def model_path_for_ticker(ticker: str, period: str | None = None) -> Path:
+	normalized_ticker = (ticker or "AAPL").upper().strip().replace("/", "_")
+	if period is None:
+		return MODELS_DIR / f"model_{normalized_ticker}.pkl"
+
+	normalized_period = str(period).strip().replace("/", "_").replace(" ", "")
+	return MODELS_DIR / f"model_{normalized_ticker}_{normalized_period}.pkl"

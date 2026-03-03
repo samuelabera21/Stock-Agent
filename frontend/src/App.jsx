@@ -58,6 +58,7 @@ function App() {
   const callApi = async (endpoint, options = {}) => {
     setLoading(true)
     setError('')
+    setResult(null)
 
     try {
       if (!API_BASE) {
@@ -100,6 +101,7 @@ function App() {
       }
 
       setError(message)
+      setResult(null)
     } finally {
       setLoading(false)
     }

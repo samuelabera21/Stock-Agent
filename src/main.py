@@ -16,7 +16,7 @@ def run(ticker="AAPL", period="5y", force_retrain=False):
     print("Fetching stock data...")
 
     ticker = (ticker or "AAPL").upper().strip()
-    model_path = model_path_for_ticker(ticker)
+    model_path = model_path_for_ticker(ticker, period=period)
 
     data = fetch_stock_data(ticker=ticker, period=period)
     data = add_features(data)
@@ -25,7 +25,7 @@ def run(ticker="AAPL", period="5y", force_retrain=False):
     artifact = None
 
     if force_retrain:
-        artifact = train_model(data, ticker=ticker)
+        artifact = train_model(data, ticker=ticker, period=period)
         trained = True
     elif not model_path.exists():
         raise FileNotFoundError(
@@ -33,7 +33,7 @@ def run(ticker="AAPL", period="5y", force_retrain=False):
         )
 
     try:
-        prediction_info, loaded_artifact = predict_price(data, ticker=ticker)
+        prediction_info, loaded_artifact = predict_price(data, ticker=ticker, period=period)
     except ValueError as error:
         if "artifact format is invalid" not in str(error).lower() and "price model not found" not in str(error).lower():
             raise

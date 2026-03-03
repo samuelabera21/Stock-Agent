@@ -14,7 +14,7 @@ This project is dataset-driven: it fetches market data from Yahoo Finance (`yfin
 - `app/` → Flask API (`/health`, `/train`, `/predict`)
 - `src/` → data fetch, features, training, prediction, config
 - `frontend/` → React + Vite dashboard
-- `models/` → saved model artifacts (`model_<TICKER>.pkl`)
+- `models/` → saved model artifacts (`model_<TICKER>_<PERIOD>.pkl`)
 - `PROJECT_DATA_FLOW_AND_FILE_RESPONSIBILITIES.md` → detailed technical documentation
 
 ## Requirements
@@ -152,6 +152,7 @@ Yes.
 - Default train period: `5y` and default predict period: `1y` in `app/api.py`
 - Training: `src/train.py` builds models from engineered dataset features
 - Prediction: `src/predict.py` loads trained model artifacts and infers from latest feature row
+- Final decision is derived from predicted return against training quantile thresholds (dataset-driven), with classifier agreement used as secondary confirmation.
 
 ## Notes
 

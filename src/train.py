@@ -36,7 +36,7 @@ except ImportError:
     )
 
 
-def train_model(data, ticker="AAPL"):
+def train_model(data, ticker="AAPL", period="5y"):
     missing = [column for column in FEATURE_COLUMNS if column not in data.columns]
     if missing:
         raise ValueError(f"Missing required feature columns: {missing}")
@@ -139,12 +139,13 @@ def train_model(data, ticker="AAPL"):
         "trained_at": datetime.now(timezone.utc).isoformat(),
         "metrics": metrics,
         "ticker": ticker.upper(),
+        "period": str(period),
         "target_horizon_days": TARGET_HORIZON_DAYS,
         "use_baseline": use_baseline,
         "blend_weight": blend_weight,
     }
 
-    model_path = model_path_for_ticker(ticker)
+    model_path = model_path_for_ticker(ticker, period=period)
     model_path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(artifact, model_path)
 

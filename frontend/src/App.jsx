@@ -4,6 +4,8 @@ import './App.css'
 const configuredApiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 const API_BASE = configuredApiBase || (import.meta.env.DEV ? 'http://127.0.0.1:5000' : null)
 const REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_API_TIMEOUT_MS || 45000)
+const DEFAULT_TRAIN_PERIOD = '5y'
+const DEFAULT_PREDICT_PERIOD = '1y'
 
 function formatNumber(value) {
   if (typeof value !== 'number' || Number.isNaN(value)) {
@@ -140,6 +142,16 @@ function App() {
       </section>
 
       {error ? <p className="error">{error}</p> : null}
+
+      <section className="panel metrics">
+        <h2>How This Dashboard Works</h2>
+        <div className="metrics-grid">
+          <div><span>Data Source</span><strong>Yahoo Finance (yfinance)</strong></div>
+          <div><span>Default Train Period</span><strong>{DEFAULT_TRAIN_PERIOD}</strong></div>
+          <div><span>Default Predict Period</span><strong>{DEFAULT_PREDICT_PERIOD}</strong></div>
+          <div><span>Rows Used</span><strong>{result?.data_rows ?? 'Shown after prediction'}</strong></div>
+        </div>
+      </section>
 
       <section className="grid">
         <article className="card">

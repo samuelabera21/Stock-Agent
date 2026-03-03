@@ -56,7 +56,18 @@ def predict_price(data, ticker="AAPL", period="5y"):
     else:
         model_price = current_price * (1.0 + raw_prediction)
 
-    predicted_return = (model_price / current_price) - 1.0
+    model_predicted_return = (model_price / current_price) - 1.0
+
+    use_baseline = bool(artifact.get("use_baseline", False))
+    artifact_blend_weight = float(artifact.get("blend_weight", 1.0))
+    if artifact_blend_weight < 0.0:
+        artifact_blend_weight = 0.0
+    if artifact_blend_weight > 1.0:
+        artifact_blend_weight = 1.0
+
+    applied_blend_weight = 0.0 if use_baseline else artifact_blend_weight
+    final_price = (applied_blend_weight * model_price) + ((1.0 - applied_blend_weight) * current_price)
+    predicted_return = (final_price / current_price) - 1.0
 
     metrics = artifact.get("metrics", {})
     decision_quantiles = metrics.get("decision_quantiles", {}) if isinstance(metrics, dict) else {}
@@ -87,10 +98,6 @@ def predict_price(data, ticker="AAPL", period="5y"):
         final_decision = quantile_decision
         decision_source = "regression-quantile"
 
-    use_baseline = False
-    applied_blend_weight = 1.0
-    final_price = model_price
-
     quality_ratio = float(metrics.get("quality_ratio", 0.0))
     if quality_ratio >= 1.0:
         confidence = "high"
@@ -101,10 +108,11 @@ def predict_price(data, ticker="AAPL", period="5y"):
 
     prediction_info = {
         "current_price": current_price,
-        "predicted_return": predicted_return,
+        "predicted_return": float(predicted_return),
+        "model_predicted_return": float(model_predicted_return),
         "model_price": float(model_price),
         "final_price": float(final_price),
-        "used_baseline": use_baseline,
+        "used_baseline": bool(use_baseline),
         "blend_weight": applied_blend_weight,
         "confidence": confidence,
         "model_decision": final_decision,

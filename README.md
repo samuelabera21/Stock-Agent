@@ -35,6 +35,33 @@ The current codebase has been validated with:
 - `src/main.py`: orchestrates pipeline and returns API-ready response payload.
 - `frontend/src/App.jsx`: dashboard UI, API calls, and result display.
 - `models/`: persisted model artifacts, one file per ticker/period.
+- `AI_AGENT_FULL_PROCESS_DIAGRAM.md`: full Mermaid process diagram for class/demo presentation.
+
+## Documentation update note
+
+This repository currently includes documentation-focused updates (comments + diagrams) to improve explainability for presentations and learning.
+
+- These docs updates do **not** change deployment architecture.
+- Functional behavior remains controlled by runtime code paths in `app/` and `src/`.
+
+## Presentation assets
+
+Use these docs when presenting the app flow to classmates:
+
+- `README.md` (this file): architecture, decision logic, deployment, troubleshooting.
+- `AI_AGENT_FULL_PROCESS_DIAGRAM.md`: end-to-end visual flow including:
+  - where data is fetched,
+  - how period defaults are applied,
+  - how row counts are reduced/validated,
+  - where `.pkl` artifacts are saved/loaded,
+  - how final decision/confidence is generated.
+
+### Export diagram for slides
+
+1. Open `AI_AGENT_FULL_PROCESS_DIAGRAM.md`.
+2. Copy Mermaid block (`flowchart TD ...`).
+3. Paste into https://mermaid.live.
+4. Export as `PNG` or `SVG`.
 
 ## Decision logic (where BUY / SELL / HOLD comes from)
 
@@ -113,10 +140,11 @@ VITE_API_TIMEOUT_MS=120000
 
 Required environment variables:
 
-- `DEFAULT_TRAIN_PERIOD=5y`
+- `DEFAULT_TRAIN_PERIOD=6mo`
 - `DEFAULT_PREDICT_PERIOD=1y`
 - `YFINANCE_FETCH_TIMEOUT_SECONDS=12`
 - `PREDICT_CACHE_TTL_SECONDS=60`
+- `PREDICT_AUTO_TRAIN_ON_MISS=false`
 
 Deploy steps:
 

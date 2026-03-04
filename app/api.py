@@ -22,6 +22,7 @@ CORS(app)
 
 
 PREDICT_CACHE_TTL_SECONDS = int(os.getenv("PREDICT_CACHE_TTL_SECONDS", "60"))
+PREDICT_AUTO_TRAIN_ON_MISS = os.getenv("PREDICT_AUTO_TRAIN_ON_MISS", "false").lower() == "true"
 PREDICT_CACHE = {}
 PREDICT_CACHE_LOCK = Lock()
 
@@ -125,7 +126,18 @@ def predict():
 
         try:
             result = run(ticker=ticker, period=period, force_retrain=retrain)
-        except FileNotFoundError:
+        except FileNotFoundError as missing_model_error:
+            if not retrain and not PREDICT_AUTO_TRAIN_ON_MISS:
+                return (
+                    jsonify(
+                        {
+                            "error": str(missing_model_error),
+                            "needs_training": True,
+                            "suggestion": "Call /train first or retry /predict with retrain=true.",
+                        }
+                    ),
+                    409,
+                )
             result = run(ticker=ticker, period=period, force_retrain=True)
             auto_trained = True
 

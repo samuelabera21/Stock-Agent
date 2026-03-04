@@ -4,7 +4,7 @@ import './App.css'
 const configuredApiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 const API_BASE = configuredApiBase || (import.meta.env.DEV ? 'http://127.0.0.1:5000' : null)
 const REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_API_TIMEOUT_MS || 120000)
-const DEFAULT_TRAIN_PERIOD = '5y'
+const DEFAULT_TRAIN_PERIOD = '6mo'
 const DEFAULT_PREDICT_PERIOD = '1y'
 
 function formatNumber(value) {
@@ -89,6 +89,9 @@ function App() {
         : null
 
       if (!response.ok) {
+        if (response.status === 409 && payload?.needs_training) {
+          throw new Error('Model for this ticker is not trained yet. Click Retrain once, then run Predict again.')
+        }
         throw new Error(payload?.error || `Request failed (${response.status})`)
       }
 

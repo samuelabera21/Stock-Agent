@@ -3,9 +3,9 @@
 import yfinance as yf
 
 try:
-    from .config import YFINANCE_FETCH_TIMEOUT_SECONDS
+    from .config import DEFAULT_PREDICT_PERIOD, YFINANCE_FETCH_TIMEOUT_SECONDS
 except ImportError:
-    from config import YFINANCE_FETCH_TIMEOUT_SECONDS
+    from config import DEFAULT_PREDICT_PERIOD, YFINANCE_FETCH_TIMEOUT_SECONDS
 
 
 # This dictionary is used if a ticker symbol needs an alternative name.
@@ -20,11 +20,12 @@ TICKER_FALLBACKS = {
 
 # This function downloads stock data.
 # ticker  → stock symbol (default: AAPL)
-# period  → how much historical data (default: 5 years)
+# period  → how much historical data (default: config default period)
 # retries → how many times to try if download fails
-def fetch_stock_data(ticker="AAPL", period="5y", retries=3):
+def fetch_stock_data(ticker="AAPL", period=None, retries=3):
 
     ticker = (ticker or "AAPL").upper().strip()
+    period = (period or DEFAULT_PREDICT_PERIOD).strip()
 
     # Will store the downloaded stock data (as a table/DataFrame)
     data = None
@@ -51,7 +52,7 @@ def fetch_stock_data(ticker="AAPL", period="5y", retries=3):
         for _ in range(retries):
             try:
                 # Download stock data from Yahoo Finance
-                # period="5y" means last 5 years
+                # Example periods: "6mo", "1y", "5y"
                 # progress=False hides progress bar
                 # auto_adjust=False keeps raw prices (no dividend adjustment)
                 data = yf.download(

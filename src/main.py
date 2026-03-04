@@ -13,10 +13,17 @@ except ImportError:
 
 
 def run(ticker="AAPL", period="5y", force_retrain=False):
-    print("Fetching stock data...")
-
     ticker = (ticker or "AAPL").upper().strip()
     model_path = model_path_for_ticker(ticker, period=period)
+
+    # Fast-fail before network work when prediction is requested for an untrained model.
+    # This prevents duplicate fetch+feature work when caller falls back to force_retrain=True.
+    if not force_retrain and not model_path.exists():
+        raise FileNotFoundError(
+            f"Model for ticker '{ticker}' not trained yet. Call /train first or use /predict?retrain=true."
+        )
+
+    print("Fetching stock data...")
 
     data = fetch_stock_data(ticker=ticker, period=period)
     data = add_features(data)
@@ -27,11 +34,6 @@ def run(ticker="AAPL", period="5y", force_retrain=False):
     if force_retrain:
         artifact = train_model(data, ticker=ticker, period=period)
         trained = True
-    elif not model_path.exists():
-        raise FileNotFoundError(
-            f"Model for ticker '{ticker}' not trained yet. Call /train first or use /predict?retrain=true."
-        )
-
     try:
         prediction_info, loaded_artifact = predict_price(data, ticker=ticker, period=period)
     except ValueError as error:

@@ -90,7 +90,7 @@ function App() {
 
       if (!response.ok) {
         if (response.status === 409 && payload?.needs_training) {
-          throw new Error('Model for this ticker is not trained yet. Click Retrain once, then run Predict again.')
+          throw new Error('Model is not trained and backend auto-train is disabled. Enable PREDICT_AUTO_TRAIN_ON_MISS=true on backend.')
         }
         throw new Error(payload?.error || `Request failed (${response.status})`)
       }
@@ -121,11 +121,6 @@ function App() {
     await callApi(`/predict?ticker=${encodeURIComponent(symbol)}`)
   }
 
-  const handleRetrain = async () => {
-    const symbol = ticker.trim().toUpperCase() || 'AAPL'
-    await callApi(`/train?ticker=${encodeURIComponent(symbol)}`, { method: 'POST' })
-  }
-
   return (
     <main className="container">
       <div className="orb orb-one" aria-hidden="true" />
@@ -151,9 +146,6 @@ function App() {
         <div className="control-actions">
           <button onClick={handlePredict} disabled={loading}>
             {loading ? 'Loading...' : 'Predict'}
-          </button>
-          <button className="secondary" onClick={handleRetrain} disabled={loading}>
-            {loading ? 'Loading...' : 'Retrain'}
           </button>
         </div>
       </section>

@@ -142,9 +142,10 @@ Required environment variables:
 
 - `DEFAULT_TRAIN_PERIOD=6mo`
 - `DEFAULT_PREDICT_PERIOD=1y`
+- `MIN_ROWS_FOR_TRAINING=60`
 - `YFINANCE_FETCH_TIMEOUT_SECONDS=12`
 - `PREDICT_CACHE_TTL_SECONDS=60`
-- `PREDICT_AUTO_TRAIN_ON_MISS=false`
+- `PREDICT_AUTO_TRAIN_ON_MISS=true`
 
 Deploy steps:
 
@@ -172,14 +173,14 @@ Deploy steps:
 - First `predict` for a ticker may be slower due to model load or auto-train.
 - Render free tier may cold-start (delay up to ~50s).
 - Prediction caching is enabled by backend TTL.
-- If predictions look stale, use `retrain=true` or call `/train`.
+- First predict for a new ticker may auto-train once, then later predicts are faster.
 
 ## Troubleshooting
 
 - Frontend shows `API is not configured`:
   - Missing `VITE_API_BASE_URL` in Vercel env vars.
 - Frequent `HOLD` decisions:
-  - Retrain model for ticker (`/train`) after code updates.
+  - Run retraining for the ticker (`/train` or `/predict?retrain=true`) after major code updates.
   - Check `decision_thresholds`, `model_predicted_return`, and `decision_return` in response.
 - `No data returned for ticker`:
   - Verify symbol, period, and Yahoo availability.

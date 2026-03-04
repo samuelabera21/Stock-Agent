@@ -22,7 +22,7 @@ CORS(app)
 
 
 PREDICT_CACHE_TTL_SECONDS = int(os.getenv("PREDICT_CACHE_TTL_SECONDS", "60"))
-PREDICT_AUTO_TRAIN_ON_MISS = os.getenv("PREDICT_AUTO_TRAIN_ON_MISS", "false").lower() == "true"
+PREDICT_AUTO_TRAIN_ON_MISS = os.getenv("PREDICT_AUTO_TRAIN_ON_MISS", "true").lower() == "true"
 PREDICT_CACHE = {}
 PREDICT_CACHE_LOCK = Lock()
 

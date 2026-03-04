@@ -44,7 +44,8 @@ RANDOM_STATE = 42
 # Number of trees in RandomForest; read from environment for production tuning without code edits.
 N_ESTIMATORS = int(os.getenv("N_ESTIMATORS", "120"))
 # Minimum number of rows required before allowing training (guards against tiny/unstable datasets).
-MIN_ROWS_FOR_TRAINING = 120
+# 6-month windows typically produce fewer usable rows after feature engineering, so this default is lower.
+MIN_ROWS_FOR_TRAINING = int(os.getenv("MIN_ROWS_FOR_TRAINING", "60"))
 # Forecast horizon in days (1 means predict next trading day's close).
 TARGET_HORIZON_DAYS = 1
 # Data period used when explicitly training (environment-overridable for flexible deployments).

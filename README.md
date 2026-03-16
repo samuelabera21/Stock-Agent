@@ -3,6 +3,8 @@
 
 AI Stock Agent with a Flask backend and React frontend.
 
+For lecturer-ready project writeup, see `PROJECT_FULL_DOCUMENTATION.md`.
+
 Live frontend: https://stock-agent-bn3k.vercel.app/
 Live backend: https://stock-agent-api-5rcn.onrender.com
 
